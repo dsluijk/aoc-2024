@@ -25,8 +25,7 @@ if (!day || !part) {
   process.exit(1);
 }
 
-console.log(`Now solving day ${day} part ${part}`);
-console.log("---============---");
+console.log(`Now solving day ${day} part ${part}..`);
 
 const solver = await import(`./solvers/${day}/${part}.ts`);
 if (!solver.solve) {
@@ -41,4 +40,9 @@ if (!(await inputFile.exists())) {
 }
 
 const input = (await inputFile.text()).trim();
-console.log(solver.solve(input));
+const startTime = performance.now();
+const result = solver.solve(input);
+const endTime = performance.now();
+console.log(`Solved in ${(endTime - startTime).toFixed(3)}ms.`);
+console.log("---============---");
+console.log(result);

@@ -1,49 +1,42 @@
 export const solve = (input: string) => {
-  let stones: { [key: string]: number } = input
-    .split(" ")
-    .reduce((a, v) => ({ ...a, [v]: 1 }), {});
+  let stones = new Map<number, number>();
+  input.split(" ").forEach((stone) => {
+    stones.set(Number(stone), 1);
+  });
 
-  let nextValues: { [key: string]: string[] } = {};
+  const valueCache = new Map<number, number[]>();
   for (let i = 0; i < 75; i++) {
-    let newStones: { [key: string]: number } = {};
+    const newStones = new Map<number, number>();
 
-    for (let [key, value] of Object.entries(stones)) {
-      let nextKeys = [];
+    stones.forEach((count, stone) => {
+      let nextStones = valueCache.get(stone);
 
-      if (key in nextValues) {
-        nextKeys = nextValues[key];
-      } else {
-        if (key === "0") {
-          nextKeys = ["1"];
-        } else if (key.length % 2 === 0) {
-          nextKeys = [
-            key.slice(0, key.length / 2),
-            key.slice(key.length / 2, key.length),
-          ];
+      if (!nextStones) {
+        if (stone === 0) {
+          nextStones = [1];
+        } else if (Math.floor(Math.log10(stone) % 2) === 1) {
+          const digits = (Math.floor(Math.log10(stone)) + 1) / 2;
+          const border = 10 ** digits;
+          nextStones = [Math.floor(stone / border), stone % border];
         } else {
-          nextKeys = [(Number(key) * 2024).toString()];
+          nextStones = [stone * 2024];
         }
 
-        nextValues[key] = nextKeys;
+        valueCache.set(stone, nextStones);
       }
 
-      for (const nextKey of nextKeys) {
-        const normalizedKey = Number(nextKey).toString();
-        if (!(normalizedKey in newStones)) {
-          newStones[normalizedKey] = value;
-        } else {
-          newStones[normalizedKey] += value;
-        }
+      for (const nextKey of nextStones) {
+        newStones.set(nextKey, count + (newStones.get(nextKey) ?? 0));
       }
-    }
+    });
 
     stones = newStones;
   }
 
-  let count = 0;
-  for (let key in stones) {
-    count += stones[key];
-  }
+  let total = 0;
+  stones.forEach((count) => {
+    total += count;
+  });
 
-  return count;
+  return total;
 };

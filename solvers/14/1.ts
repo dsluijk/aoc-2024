@@ -1,8 +1,7 @@
 const PARSER = /p=([0-9]+),([0-9]+) v=(-?[0-9]+),(-?[0-9]+)/;
 
-const TESTING = false;
-const WIDTH = TESTING ? 11 : 101;
-const HEIGHT = TESTING ? 7 : 103;
+const WIDTH = process.env.NODE_ENV === "test" ? 11 : 101;
+const HEIGHT = process.env.NODE_ENV === "test" ? 7 : 103;
 
 type State = {
   pos: [number, number];

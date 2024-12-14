@@ -1,8 +1,7 @@
 const PARSER = /p=([0-9]+),([0-9]+) v=(-?[0-9]+),(-?[0-9]+)/;
 
-const TESTING = false;
-const WIDTH = TESTING ? 11 : 101;
-const HEIGHT = TESTING ? 7 : 103;
+const WIDTH = process.env.NODE_ENV === "test" ? 11 : 101;
+const HEIGHT = process.env.NODE_ENV === "test" ? 7 : 103;
 
 type State = {
   pos: [number, number];
@@ -22,20 +21,22 @@ export const solve = (input: string) => {
     });
   }
 
-  for (let i = 1; i < 1000000; i++) {
-    const picture: boolean[][] = [];
+  let iter = 0;
+  while (true) {
+    iter++;
+    const filled = new Set<string>();
     let overlaps = false;
+
     for (let state of states) {
       state.pos[0] = (state.pos[0] + state.vel[0] + WIDTH) % WIDTH;
       state.pos[1] = (state.pos[1] + state.vel[1] + HEIGHT) % HEIGHT;
 
-      if (!picture[state.pos[0]]) picture[state.pos[0]] = [];
-      if (picture[state.pos[0]][state.pos[1]]) overlaps = true;
-      picture[state.pos[0]][state.pos[1]] = true;
+      if (overlaps) continue;
+      const key = `${state.pos[0]},${state.pos[1]}`;
+      if (filled.has(key)) overlaps = true;
+      filled.add(key);
     }
 
-    if (!overlaps) return i;
+    if (!overlaps) return iter;
   }
-
-  return -1;
 };

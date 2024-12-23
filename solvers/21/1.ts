@@ -78,7 +78,6 @@ const minLength = (
 ): number => {
   let total = 0;
   let currentChar: Directional | Numeric = "A";
-  console.log(sequence);
   for (const char of sequence) {
     const moves = getMoves(currentChar, char, depth);
 
@@ -106,7 +105,6 @@ export const solve = (input: string) => {
   let totalComplexity = 0;
   for (const line of lines) {
     const length = minLength(line.split("") as Numeric[], 2, 0);
-    console.log(length, Number(line.replaceAll("A", "")));
     totalComplexity += Number(line.replaceAll("A", "")) * length;
   }
 
